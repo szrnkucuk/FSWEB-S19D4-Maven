@@ -4,7 +4,7 @@ import com.workintech.s19d1.entity.Actor;
 import com.workintech.s19d1.entity.Gender;
 import com.workintech.s19d1.entity.Movie;
 import com.workintech.s19d1.exceptions.ApiException;
-import com.workintech.s19d1.exceptions.ExceptionResponse;
+import com.workintech.s19d1.exceptions.ErrorResponse;
 import com.workintech.s19d1.repository.ActorRepository;
 import com.workintech.s19d1.repository.MovieRepository;
 import com.workintech.s19d1.service.ActorServiceImpl;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -143,12 +142,10 @@ class MainTest {
         int expectedStatus = 400;
         LocalDateTime expectedDateTime = LocalDateTime.now();
 
-        ExceptionResponse exceptionResponse = new ExceptionResponse(expectedMessage, expectedStatus, expectedDateTime);
+        ErrorResponse exceptionResponse = new ErrorResponse(expectedMessage);
 
         // Verify that each property is correctly initialized
         assertEquals(expectedMessage, exceptionResponse.getMessage(), "The message should match the initialized value.");
-        assertEquals(expectedStatus, exceptionResponse.getStatus(), "The status should match the initialized value.");
-        assertEquals(expectedDateTime, exceptionResponse.getDateTime(), "The dateTime should match the initialized value.");
     }
 
     @Test
@@ -190,7 +187,7 @@ class MainTest {
 
         assertThatThrownBy(() -> actorService.findById(actorId))
                 .isInstanceOf(ApiException.class)
-                .hasMessageContaining("actor is not found with id: " + actorId);
+                .hasMessageContaining("Actor is not found");
     }
 
     @Test
@@ -233,7 +230,7 @@ class MainTest {
         when(mockMovieRepository.findById(anyLong())).thenReturn(Optional.empty());
         assertThatThrownBy(() -> movieService.findById(2L))
                 .isInstanceOf(ApiException.class)
-                .hasMessageContaining("Movie is not found with id: 2")
+                .hasMessageContaining("Movie is not found")
                 .matches(exception -> ((ApiException) exception).getHttpStatus() == HttpStatus.NOT_FOUND);
     }
 
